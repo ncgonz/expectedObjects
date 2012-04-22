@@ -43,7 +43,10 @@
     <Compile Include="..\CommonAssemblyInfo.cs">
       <Link>CommonAssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="ComparisonResult.cs" />
+    <Compile Include="IComparisionResult.cs" />
     <Compile Include="ObjectShouldExtensions.cs" />
+    <Compile Include="StackDictionary.cs" />
     <Compile Include="Strategies\ClassComparisonStrategy.cs" />
     <Compile Include="Strategies\ComparableComparisonStrategy.cs" />
     <Compile Include="ConfigurationContext.cs" />

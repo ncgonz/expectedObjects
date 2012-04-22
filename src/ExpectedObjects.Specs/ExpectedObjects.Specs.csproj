@@ -68,6 +68,7 @@
     <Compile Include="ObjectShouldNotMatchSpecs.cs" />
     <Compile Include="ObjectSpecs.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="RecursionSpecs.cs" />
     <Compile Include="ShouldEqualExtensionDoubleSpecs.cs" />
     <Compile Include="ShouldEqualExtensionEnumerableSpecs.cs" />
     <Compile Include="ShouldEqualExtensionIndexSpecs.cs" />
@@ -82,10 +83,12 @@
     <Compile Include="StructureSpecs.cs" />
     <Compile Include="TestTypes\ComparableType.cs" />
     <Compile Include="TestTypes\ComplexType.cs" />
+    <Compile Include="TestTypes\DuplicateReferenceType.cs" />
     <Compile Include="TestTypes\EnumType.cs" />
     <Compile Include="TestTypes\EqualsOverrideType.cs" />
     <Compile Include="TestTypes\IndexType.cs" />
     <Compile Include="TestTypes\MultiIndexType.cs" />
+    <Compile Include="TestTypes\RecursiveType.cs" />
     <Compile Include="TestTypes\SimpleType.cs" />
     <Compile Include="TestTypes\StructureType.cs" />
     <Compile Include="TestTypes\TypeWithIEnumerable.cs" />

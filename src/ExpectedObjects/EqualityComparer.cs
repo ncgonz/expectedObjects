@@ -11,6 +11,7 @@ namespace ExpectedObjects
 	{
 		readonly IConfiguredContext _configurationContext;
 		readonly Stack<string> _stack = new Stack<string>();
+		readonly StackDictionary<object, IComparisionResult> _visited = new StackDictionary<object, IComparisionResult>();
 
 		public EqualityComparer(IConfiguredContext configurationContext)
 		{
@@ -18,6 +19,60 @@ namespace ExpectedObjects
 		}
 
 		public bool AreEqual(object expected, object actual, string member)
+		{
+			if (actual != null && _visited.ContainsKey(actual))
+			{
+				return _visited[actual].Result;
+			}
+
+			if (actual != null)
+				_visited.Push(actual, new ComparisonResult(actual, true));
+
+			bool result = Compare(expected, actual, member);
+
+			if (actual != null)
+				_visited.Pop(actual);
+
+			return result;
+		}
+
+		public bool CompareProperties(object expected, object actual,
+		                              Func<PropertyInfo, PropertyInfo, bool> propertyComparison)
+		{
+			const BindingFlags flags = BindingFlags.Public | BindingFlags.Instance;
+			IEnumerable<PropertyInfo> expectedPropertyInfos = expected.GetType().GetProperties(flags)
+				.ExcludeHiddenProperties(expected.GetType());
+			IEnumerable<PropertyInfo> actualPropertyInfos =
+				actual.GetType().GetProperties(flags).ExcludeHiddenProperties(expected.GetType());
+			bool areEqual = true;
+			expectedPropertyInfos.ToList().ForEach(pi =>
+				{
+					areEqual = propertyComparison(pi,
+					                              actualPropertyInfos
+					                              	.Where(p => p.Name.Equals(pi.Name))
+					                              	.SingleOrDefault()) & areEqual;
+				});
+
+			return areEqual;
+		}
+
+		public bool CompareFields(object expected, object actual, Func<FieldInfo, FieldInfo, bool> comparison)
+		{
+			BindingFlags flags = _configurationContext.GetFieldBindingFlags();
+			FieldInfo[] expectedFieldInfos = expected.GetType().GetFields(flags);
+			FieldInfo[] actualFieldInfos = actual.GetType().GetFields(flags);
+			bool areEqual = true;
+			expectedFieldInfos.ToList().ForEach(pi =>
+				{
+					areEqual = comparison(pi,
+					                      actualFieldInfos.Where(p => p.Name.Equals(pi.Name)).SingleOrDefault
+					                      	()) & areEqual;
+				});
+
+			return areEqual;
+		}
+
+		bool Compare(object expected, object actual, string member)
 		{
 			try
 			{
@@ -82,42 +137,6 @@ namespace ExpectedObjects
 			}
 		}
 
-		public bool CompareProperties(object expected, object actual,
-		                              Func<PropertyInfo, PropertyInfo, bool> propertyComparison)
-		{
-			const BindingFlags flags = BindingFlags.Public | BindingFlags.Instance;
-			IEnumerable<PropertyInfo> expectedPropertyInfos = expected.GetType().GetProperties(flags)
-				.ExcludeHiddenProperties(expected.GetType());
-			IEnumerable<PropertyInfo> actualPropertyInfos =
-				actual.GetType().GetProperties(flags).ExcludeHiddenProperties(expected.GetType());
-			bool areEqual = true;
-			expectedPropertyInfos.ToList().ForEach(pi =>
-				{
-					areEqual = propertyComparison(pi,
-					                              actualPropertyInfos
-					                              	.Where(p => p.Name.Equals(pi.Name))
-					                              	.SingleOrDefault()) & areEqual;
-				});
-
-			return areEqual;
-		}
-
-		public bool CompareFields(object expected, object actual, Func<FieldInfo, FieldInfo, bool> comparison)
-		{
-			BindingFlags flags = _configurationContext.GetFieldBindingFlags();
-			FieldInfo[] expectedFieldInfos = expected.GetType().GetFields(flags);
-			FieldInfo[] actualFieldInfos = actual.GetType().GetFields(flags);
-			bool areEqual = true;
-			expectedFieldInfos.ToList().ForEach(pi =>
-				{
-					areEqual = comparison(pi,
-					                      actualFieldInfos.Where(p => p.Name.Equals(pi.Name)).SingleOrDefault
-					                      	()) & areEqual;
-				});
-
-			return areEqual;
-		}
-
 		public bool AreEqual(object expected, object actual)
 		{
 			return AreEqual(expected, actual, (actual != null) ? actual.GetType().Name : string.Empty);
@@ -141,7 +160,7 @@ namespace ExpectedObjects
 			IEnumerable<string> newProperties =
 				originType.GetProperties(flags).GroupBy(p => p.Name).Where(g => g.Count() > 1).Select(g => g.Key);
 
-			if (newProperties.Count() == 0)
+			if (!newProperties.Any())
 				return infos;
 
 			List<PropertyInfo> properties = infos.Where(p => !newProperties.Contains(p.Name)).ToList();
@@ -154,9 +173,7 @@ namespace ExpectedObjects
 				while (closestPropertyDeclaration == null)
 				{
 					PropertyInfo pi = declaringType.GetProperties(flags)
-						.Where(p => p.Name == newProperty)
-						.Where(p => p.DeclaringType == declaringType)
-						.SingleOrDefault();
+						.Where(p => p.Name == newProperty).SingleOrDefault(p => p.DeclaringType == declaringType);
 
 					if (pi != null)
 						closestPropertyDeclaration = pi;
