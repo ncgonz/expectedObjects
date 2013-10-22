@@ -31,6 +31,11 @@ namespace ExpectedObjects
             expected.SetToDefault(propertiesToIgnore).ToExpectedObject().ShouldEqual(actual.SetToDefault(propertiesToIgnore));
         }
 
+        public static void IsExpectedToBeSimilar<T>(this T actual, T expected, params Expression<Func<T, object>>[] propertiesToIgnore)
+        {
+            expected.SetToDefault(propertiesToIgnore).ToExpectedObject().IgnoreTypes().ShouldEqual(actual.SetToDefault(propertiesToIgnore));
+        }
+
         public static void IsExpectedToBeSimilar(this object actual, object expected)
         {
             expected.ToExpectedObject().IgnoreTypes().ShouldEqual(actual);

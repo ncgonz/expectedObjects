@@ -22,8 +22,8 @@ namespace ExpectedObjects
                 if (body == null || body.Member.MemberType != MemberTypes.Property) throw new UnsupportedExpressionType(expression.Body.NodeType);
 
                 var property = (PropertyInfo)body.Member;
-                var setMethod = property.GetSetMethod();
-
+                var setMethod = property.GetSetMethod(true);
+                
                 var propertyType = ((PropertyInfo)body.Member).PropertyType;
                 var parameterT = Expression.Parameter(body.Member.ReflectedType, "x");
                 var parameterTProperty = Expression.Parameter(propertyType, "y");
