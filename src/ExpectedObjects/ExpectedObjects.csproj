@@ -47,6 +47,15 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="IgnoreExtensions.cs" />
+    <Compile Include="Comparisons\Any.cs" />
+    <Compile Include="Comparisons\NotNullComparison.cs" />
+    <Compile Include="Comparisons\NullComparison.cs" />
+    <Compile Include="Expect.cs" />
+    <Compile Include="ExpectedDescription.cs" />
+    <Compile Include="IComparison.cs" />
+    <Compile Include="IExpectedDescription.cs" />
+    <Compile Include="IMissing.cs" />
+    <Compile Include="IMissingMember.cs" />
     <Compile Include="ObjectShouldExtensions.cs" />
     <Compile Include="Strategies\ClassComparisonStrategy.cs" />
     <Compile Include="Strategies\ComparableComparisonStrategy.cs" />
@@ -84,7 +93,8 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PreBuildEvent>$(SolutionDir)..\scripts\install-packages.bat</PreBuildEvent>
+    <PreBuildEvent>
+    </PreBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
