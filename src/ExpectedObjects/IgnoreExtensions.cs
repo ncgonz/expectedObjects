@@ -45,7 +45,7 @@ namespace ExpectedObjects
             return objectToApplyIgnoresTo;
         }
 
-        private static object GetTarget(object currentLevel, Expression expr)
+        public static object GetTarget(this object currentLevel, Expression expr)
         {
             switch (expr.NodeType)
             {

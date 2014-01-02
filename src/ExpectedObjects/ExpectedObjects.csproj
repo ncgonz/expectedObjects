@@ -46,6 +46,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Comparison.cs" />
     <Compile Include="IgnoreExtensions.cs" />
     <Compile Include="Comparisons\Any.cs" />
     <Compile Include="Comparisons\NotNullComparison.cs" />
